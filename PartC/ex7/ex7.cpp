@@ -21,7 +21,6 @@ double getChannelEntropy(Mat image, int channel)
         {   
             intensity = image.at<Vec3b>(j,i);
             ch[intensity.val[channel]]++;
-            
         }
     }
 
@@ -32,7 +31,35 @@ double getChannelEntropy(Mat image, int channel)
 
     for(auto it:ch) {
         prob = it.second / total;
-        entropy_ch += prob * log(prob);
+        entropy_ch += prob * log2(prob);
+
+    }
+    return -entropy_ch;
+}
+
+double getChannelEntropyGS(Mat image)
+{   
+    int intensity;
+    unordered_map<int, double> ch;
+    double entropy_ch=0, prob;
+    int total = image.cols * image.rows;
+
+    for(int i=0; i<image.cols; i++)
+    {   for(int j=0; j<image.rows; j++)
+        {   
+            intensity = (int)image.at<uchar>(j,i);
+            ch[intensity]++;
+        }
+    }
+
+    // debug
+    /*for (auto const &pair: ch) {
+        std::cout << "{" << pair.first << ": " << pair.second << "}\n";
+    }*/ 
+
+    for(auto it:ch) {
+        prob = it.second / total;
+        entropy_ch += prob * log2(prob);
 
     }
     return -entropy_ch;
@@ -134,12 +161,14 @@ int main(int argc, char** argv){
     entropy_b = getChannelEntropy(src,0);
     entropy_g = getChannelEntropy(src,1);
     entropy_r = getChannelEntropy(src,2);
+    entropy_gs = getChannelEntropyGS(srcgrays);
     entropy_mean = (entropy_g + entropy_b + entropy_r) / 3; 
-
+    
     cout << "Entropy R:" << entropy_r << endl;
     cout << "Entropy G:" << entropy_g << endl;
     cout << "Entropy B:" << entropy_b << endl;
     cout << "Entropy mean: " << entropy_mean << endl;
+    cout << "Entropy GrayScale: " << entropy_gs << endl;
 
     return 0;
 }
