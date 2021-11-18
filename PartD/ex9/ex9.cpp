@@ -14,9 +14,12 @@ using namespace cv;
 int main( int argc, char ** argv )
 {
     cv::Mat src, dst;
-    if(argc != 3 ){
-        cout << "Aborted run. Usage: ./ex9 input_file output_file" << endl;
+    int shift = 4;
+    if(argc < 3 ){
+        cout << "Aborted run. Usage: ./ex9 input_file output_file [num_shift_bits]" << endl;
         exit (1);
+    }else if(argc == 4){
+        shift = atoi(argv[3]);
     }
 
     src = cv::imread( argv[1]);
@@ -32,7 +35,7 @@ int main( int argc, char ** argv )
     for(i=0; i<r; i++){
         for(j=0; j<c; j++){
             for(k=0; k<3; k++){
-                dst.at<Vec3b>(i, j)[k] = (src.at<Vec3b>(i, j)[k] >> 5) << 5;
+                dst.at<Vec3b>(i, j)[k] = (src.at<Vec3b>(i, j)[k] >> shift) << shift;
             }
         }
     }

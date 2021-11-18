@@ -19,20 +19,21 @@ int main(int argc, char ** argv)
 
 
     int i, j;
-    double error, max_error=0;
+    double error, max_error=0, sum=0;
     int numSamples = af1.getNumSamplesPerChannel();
     int numChannels = af1.getNumChannels();
 
     for(i=0; i< numChannels; i++){
         for(j=0; j< numSamples; j++){
+            sum += pow(af1.samples[i][j] - af2.samples[i][j],2);
             error = abs(af1.samples[i][j] - af2.samples[i][j]);
             max_error = error > max_error? error : max_error;
         }
     }
     cout << "\n\nMaximum per sample absolute error: " << max_error << endl;
 
-    int bitDepth = af1.getBitDepth();
-    double snr = 20*log10(pow(2, bitDepth));
+    double e2 = (double)sum/(numSamples*numChannels);
+    double snr = 10*log10(pow(pow(2,16),2)/e2);
     cout << "SNR: " << snr << "\n\n" << endl;
 
     return 0;
